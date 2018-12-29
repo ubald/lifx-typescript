@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./build/",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "sourceMap": true,
+    "inlineSources": false,
+    "allowJs": false,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "lib": ["es2017", "es2018", "esnext"],
+    "allowSyntheticDefaultImports": false,
+    "forceConsistentCasingInFileNames": true,
+    "listEmittedFiles": false,
+    "listFiles": false,
+    "strict": true,
+    // The following are the individual rules making up the "strict" option,
+    // "noImplicitAny": true
+    // "noImplicitThis": true,
+    // "alwaysStrict": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
+    // "strictPropertyInitialization": true,
+    // "noUnusedLocals": true,
+  "plugins": [{ "name": "typescript-tslint-plugin", "alwaysShowRuleFailuresAsWarnings": false }]
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./node_modules/**/*"]
+}

@@ -1,0 +1,95 @@
+{
+    "extends": ["tslint:recommended", "tslint-config-prettier"],
+    "linterOptions": {
+        "exclude": ["**/*.js*"]
+    },
+    "rules": {
+        // tslint:recommended custom overrides
+        "interface-name": false,
+        "max-classes-per-file": false,
+        "member-access": true,
+        "no-shadowed-variable": true,
+        "no-var-requires": true,
+        "object-literal-sort-keys": false,
+
+        // Style
+        "array-type": [true, "generic"],
+
+        // TypeScript-specific
+        "member-ordering": {
+            "options": {
+                "order": [
+                    "public-static-field",
+                    "protected-static-field",
+                    "private-static-field",
+                    "public-static-method",
+                    "protected-static-method",
+                    "private-static-method",
+                    "public-instance-field",
+                    "protected-instance-field",
+                    "private-instance-field",
+                    "public-constructor",
+                    "protected-constructor",
+                    "private-constructor",
+                    "public-instance-method",
+                    "protected-instance-method",
+                    "private-instance-method"
+                ]
+            }
+        },
+        "no-non-null-assertion": true,
+        "no-parameter-reassignment": true,
+        "promise-function-async": true,
+
+        // Functionality
+        "await-promise": true,
+        "ban-comma-operator": true,
+        "no-duplicate-switch-case": true,
+        "no-dynamic-delete": true,
+        "no-floating-promises": true,
+        "no-for-in-array": true,
+        "no-implicit-dependencies": true,
+        "no-invalid-template-strings": true,
+        "no-invalid-this": [true, "check-function-in-method"],
+        "no-misused-new": true,
+        "no-null-keyword": {
+            "severity": "warning"
+        },
+        "no-object-literal-type-assertion": true,
+        "no-return-await": true,
+        "no-sparse-arrays": true,
+        "no-this-assignment": [true, { "allow-destructuring": true }],
+        "no-unbound-method": true,
+        "no-void-expression": [true, "ignore-arrow-function-shorthand"],
+        "prefer-object-spread": true,
+        "restrict-plus-operands": true,
+        "strict-boolean-expressions": true,
+        "strict-type-predicates": true,
+        "use-default-type-parameter": true,
+
+        // Maintainability
+        "deprecation": {
+            "severity": "warning"
+        },
+        "no-default-export": true,
+        "no-duplicate-imports": true,
+        "no-require-imports": true,
+        "prefer-readonly": true,
+
+        // Style
+        "file-name-casing": [true, "pascal-case"],
+        "match-default-export-name": true,
+        "no-boolean-literal-compare": true,
+        "no-redundant-jsdoc": true,
+        "one-variable-per-declaration": true,
+        "prefer-method-signature": true,
+        "return-undefined": true,
+
+        // Extra
+        "no-magic-numbers": {
+            "severity": "warning",
+            "options": [-1, 0, 1, 100, 1000, 1024]
+        },
+        "no-unsafe-any": true
+    }
+}
