@@ -1,5 +1,7 @@
-import { HSBK } from "../HSBK";
-import { Message } from "./Message";
+import { HSBK } from "../../HSBK";
+import { LANProtocol } from "../LANProtocol";
+import { MessageUtil } from "../utils/MessageUtil";
+import { Message, PAYLOAD_OFFSET } from "./Message";
 
 export enum LightMessage {
     Get = 101,
@@ -76,10 +78,9 @@ export function Get(): Buffer {
  */
 export function SetColor(color: HSBK, duration: number = 0): Buffer {
     const payload = Buffer.allocUnsafe(13);
-    // TODO: Write payload
-    // NOTE: reserved, unsigned 8-bit integer
-    // NOTE: color
-    // NOTE: duration, unsigned 32-bit integer
+    payload.writeUInt8(0, 0); // Reserved
+    MessageUtil.writeColor(payload, color, 1);
+    payload.writeUInt32LE(duration, 9);
     return Message(LightMessage.SetColor, payload);
 }
 
@@ -104,8 +105,14 @@ export function SetWaveform(
     skewRatio: number = 0.5,
     waveform: Waveform = Waveform.Saw
 ): Buffer {
-    const payload = Buffer.allocUnsafe(0);
-    // TODO: Write payload
+    const payload = Buffer.allocUnsafe(21);
+    payload.writeUInt8(0, 0); // Reserved
+    payload.writeUInt8(transient ? 1 : 0, 1);
+    MessageUtil.writeColor(payload, color, 2);
+    payload.writeUInt32LE(period, 10);
+    payload.writeFloatLE(cycles, 14);
+    payload.writeInt16LE(skewRatio * 0xffff - 32768, 18);
+    payload.writeUInt8(waveform, 20);
     return Message(LightMessage.SetWaveform, payload);
 }
 
@@ -139,8 +146,18 @@ export function SetWaveformOptional(
     setBrightness: boolean = false,
     setKelvin: boolean = false
 ): Buffer {
-    const payload = Buffer.allocUnsafe(0);
-    // TODO: Write payload
+    const payload = Buffer.allocUnsafe(25);
+    payload.writeUInt8(0, 0); // Reserved
+    payload.writeUInt8(transient ? 1 : 0, 1);
+    MessageUtil.writeColor(payload, color, 2);
+    payload.writeUInt32LE(period, 10);
+    payload.writeFloatLE(cycles, 14);
+    payload.writeInt16LE(skewRatio * 0xffff - 32768, 18);
+    payload.writeUInt8(waveform, 20);
+    payload.writeUInt8(setHue ? 1 : 0, 21);
+    payload.writeUInt8(setSaturation ? 1 : 0, 22);
+    payload.writeUInt8(setBrightness ? 1 : 0, 23);
+    payload.writeUInt8(setKelvin ? 1 : 0, 24);
     return Message(LightMessage.SetWaveformOptional, payload);
 }
 
@@ -190,3 +207,17 @@ export function SetInfrared(brightness: number): Buffer {
     payload.writeUInt16LE(brightness, 0);
     return Message(LightMessage.SetInfrared, payload);
 }
+
+LANProtocol.addParser(LightMessage.State, message => {
+    const color = MessageUtil.readColor(message, PAYLOAD_OFFSET);
+    // NOTE: reserved, 16 bits
+    const power = message.readUInt16LE(PAYLOAD_OFFSET + 10);
+    const label = MessageUtil.readString(message, PAYLOAD_OFFSET + 12, 32);
+    // NOTE: reserved: 64 bits
+
+    // console.log(`${address} > State:`, {
+    //     label,
+    //     color,
+    //     power,
+    // });
+});

@@ -1,4 +1,5 @@
 import "source-map-support/register";
+
 import { LIFX } from "./lifx/LIFX";
 
 const lifx = new LIFX();

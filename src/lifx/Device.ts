@@ -1,5 +1,5 @@
 import { Group } from "./Group";
-import { LIFX } from "./LIFX";
+import { LANProtocol } from "./lan/LANProtocol";
 import { Zone } from "./Zone";
 
 export class Device {
@@ -9,7 +9,7 @@ export class Device {
     public zones: Array<Zone> = [];
 
     public constructor(public readonly address: string, port?: number, label?: string) {
-        this.port = port || LIFX.PORT;
+        this.port = port || LANProtocol.PORT;
         this.label = label;
     }
 

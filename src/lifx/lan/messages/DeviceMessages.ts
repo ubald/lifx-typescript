@@ -1,4 +1,7 @@
-import { Message } from "./Message";
+import { Service } from "../../Service";
+import { LANProtocol } from "../LANProtocol";
+import { MessageUtil } from "../utils/MessageUtil";
+import { Message, PAYLOAD_OFFSET } from "./Message";
 
 export enum DeviceMessage {
     GetService = 2,
@@ -188,3 +191,52 @@ export function SetGroup(): Buffer {
 export function EchoRequest(payload: Buffer): Buffer {
     return Message(DeviceMessage.EchoRequest, payload);
 }
+
+LANProtocol.addParser(DeviceMessage.StateService, message => {
+    const service = message.readUInt8(PAYLOAD_OFFSET);
+    if (service !== Service.UDP) {
+        // console.log("Unsupported service", service);
+        return;
+    }
+    const requestedPort = message.readUInt32LE(PAYLOAD_OFFSET + 1);
+
+    // const device = lifx.getOrCreateDevice(address);
+    // device.port = requestedPort;
+
+    // console.log(`${address} > StateService(service=${service}, port=${requestedPort})`);
+
+    return {
+        service,
+        port: requestedPort,
+    };
+});
+
+declare interface LIFX {
+    addHandler(type: DeviceMessage.StateService, handler: (lifx: LIFX, serviceState: boolean) => string): void;
+}
+
+LANProtocol.addParser(DeviceMessage.StateLabel, message => {
+    const label = MessageUtil.readString(message, PAYLOAD_OFFSET, 32);
+
+    // const device = lifx.getOrCreateDevice(address);
+    // device.label = label;
+
+    // console.log(`${address} > StateLabel(label=${label})`);
+});
+
+LANProtocol.addParser(DeviceMessage.StateGroup, message => {
+    const groupId = Buffer.allocUnsafe(16);
+    message.copy(groupId, 0, PAYLOAD_OFFSET, PAYLOAD_OFFSET + 16);
+
+    const label = MessageUtil.readString(message, PAYLOAD_OFFSET + 16, 32);
+
+    // NOTE: Skipping 64 bits unsigned integer updatedAt, timestamp in nanoseconds
+
+    // const group = lifx.getOrCreateGroup(groupId);
+    // group.label = label;
+
+    // const device = lifx.getOrCreateDevice(address);
+    // device.group = group;
+
+    // console.log(`${address} > StateGroup(group=Buffer, label=${label})`, groupId);
+});

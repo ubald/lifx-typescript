@@ -1,4 +1,5 @@
-import { HSBK } from "../HSBK";
+import { HSBK } from "../../HSBK";
+import { MessageUtil } from "../utils/MessageUtil";
 import { Message } from "./Message";
 
 export enum TileMessage {
@@ -87,7 +88,7 @@ export function SetTileState64(
     if (colors.length !== 64) {
         throw TypeError("colors must contain exactly 64 HSBK values");
     }
-    const payload = Buffer.allocUnsafe(6);
+    const payload = Buffer.allocUnsafe(522);
     payload.writeUInt8(index, 0);
     payload.writeUInt8(length, 1);
     payload.writeUInt8(0, 2); // Reserved
@@ -95,6 +96,6 @@ export function SetTileState64(
     payload.writeUInt8(y, 4);
     payload.writeUInt8(width, 5);
     payload.writeUInt32LE(duration, 6);
-    // TODO: Write colors
+    colors.forEach((color, index) => MessageUtil.writeColor(payload, color, 10 + index * 8));
     return Message(TileMessage.SetTileState64, payload);
 }

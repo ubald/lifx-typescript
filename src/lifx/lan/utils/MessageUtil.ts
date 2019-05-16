@@ -1,4 +1,4 @@
-import { HSBK } from "../HSBK";
+import { HSBK } from "../../HSBK";
 
 export class MessageUtil {
     public static readString(buffer: Buffer, start: number, length: number): string {
@@ -12,5 +12,12 @@ export class MessageUtil {
             brightness: buffer.readUInt16LE(offset + 4),
             kelvin: buffer.readUInt16LE(offset + 6),
         };
+    }
+
+    public static writeColor(buffer: Buffer, color: HSBK, offset: number = 0): void {
+        buffer.writeUInt16LE(color.hue, offset);
+        buffer.writeUInt16LE(color.saturation, offset + 2);
+        buffer.writeUInt16LE(color.brightness, offset + 4);
+        buffer.writeUInt16LE(color.brightness, offset + 6);
     }
 }

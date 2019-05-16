@@ -1,5 +1,7 @@
-import { HSBK } from "../HSBK";
-import { Message } from "./Message";
+import { HSBK } from "../../HSBK";
+import { LANProtocol } from "../LANProtocol";
+import { MessageUtil } from "../utils/MessageUtil";
+import { Message, PAYLOAD_OFFSET } from "./Message";
 
 export enum MultiZoneMessage {
     SetColorZones = 501,
@@ -60,3 +62,36 @@ export function GetColorZones(start: number = 0, end: number = 255): Buffer {
     payload.writeUInt8(end, 1);
     return Message(MultiZoneMessage.GetColorZones, payload);
 }
+
+LANProtocol.addParser(MultiZoneMessage.StateZone, message => {
+    const count = message.readUInt8(PAYLOAD_OFFSET);
+    const index = message.readUInt8(PAYLOAD_OFFSET + 1);
+    const color = MessageUtil.readColor(message, PAYLOAD_OFFSET + 2);
+
+    // const device = lifx.getOrCreateDevice(address);
+    // const zone = device.getOrCreateZone(index, count);
+
+    // console.log(`${address} > StateZone:`, {
+    //     count,
+    //     index,
+    //     color,
+    // });
+});
+
+LANProtocol.addParser(MultiZoneMessage.StateMultiZone, message => {
+    const count = message.readUInt8(PAYLOAD_OFFSET);
+    const index = message.readUInt8(PAYLOAD_OFFSET + 1);
+
+    const colorsOffset = PAYLOAD_OFFSET + 2;
+    const maxColorReadCount = Math.min(8, count - index);
+    const colors = new Array<HSBK>(maxColorReadCount);
+    for (let i = 0; i < maxColorReadCount; ++i) {
+        colors[i] = MessageUtil.readColor(message, colorsOffset + i * 8);
+    }
+
+    // console.log(`${address} > StateMultiZone:`, {
+    //     count,
+    //     index,
+    //     colors,
+    // });
+});
